@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireVantage | AI-Powered ATS & Resume Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #eff6ff 0%, #ffffff 100%);
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .score-circle {
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-50 top-0 left-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('home')">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">H</div>
+                    <span class="text-xl font-bold text-slate-800">HireVantage</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                    <button onclick="showSection('home')" class="hover:text-blue-600 transition">Solutions</button>
+                    <button onclick="showSection('scanner')" class="hover:text-blue-600 transition">Resume Scanner</button>
+                    <button onclick="showSection('dashboard')" class="hover:text-blue-600 transition">Enterprise ATS</button>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-slate-600 font-medium px-4 py-2">Login</button>
+                    <button onclick="showSection('scanner')" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">Free Scan</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Sections -->
+    <main class="pt-16">
+        
+        <!-- Hero Section -->
+        <section id="home-section" class="hero-gradient min-h-screen flex items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">Version 4.0 Now Live</span>
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+                        Stop Guessing. <br><span class="text-blue-600">Start Landing Interviews.</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 mb-8 max-w-lg">
+                        Our AI-powered ATS reverse-engineers recruiter filters to give you the exact keywords and formatting needed to bypass the "bots" and reach a human.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="showSection('scanner')" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition flex items-center justify-center gap-2">
+                            <i class="fas fa-rocket"></i> Scan My Resume
+                        </button>
+                        <button onclick="showSection('dashboard')" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition">
+                            View Dashboard
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-white p-8 rounded-3xl shadow-2xl border border-slate-100 animate-pulse-soft">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-medium">ATS Match Score</p>
+                                <p class="text-2xl font-bold text-slate-800">84% - Excellent!</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 w-[84%]"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                    <p class="text-xs text-slate-400">Keywords</p>
+                                    <p class="font-bold text-slate-700">14/18 Found</p>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                    <p class="text-xs text-slate-400">Formatting</p>
+                                    <p class="font-bold text-green-600">Perfect</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative elements -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-400 opacity-10 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400 opacity-10 rounded-full blur-3xl"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resume Scanner Section -->
+        <section id="scanner-section" class="hidden-section min-h-screen bg-slate-50 py-12">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Resume Compatibility Scanner</h2>
+                    <p class="text-slate-600">Upload your PDF resume to see how well it performs against modern ATS software.</p>
+                </div>
+
+                <!-- Step 1: Upload -->
+                <div id="upload-step" class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                    <div id="drop-area" class="drop-zone rounded-2xl py-16 flex flex-col items-center justify-center cursor-pointer">
+                        <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-file-pdf text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">Upload your resume</h3>
+                        <p class="text-slate-500 mb-6 text-center px-4">Drag and drop your PDF file here, or click to browse.<br><span class="text-xs">Max file size: 5MB</span></p>
+                        <input type="file" id="file-input" class="hidden" accept=".pdf">
+                        <button class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition">Select File</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Processing (Hidden initially) -->
+                <div id="loading-step" class="hidden-section bg-white rounded-3xl p-12 shadow-sm border border-slate-200 text-center">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-6"></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Analyzing your profile...</h3>
+                    <p class="text-slate-500">Checking keywords, parsing structure, and calculating match score.</p>
+                </div>
+
+                <!-- Step 3: Results (Hidden initially) -->
+                <div id="results-step" class="hidden-section space-y-6">
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                        <div class="flex flex-col md:flex-row items-center gap-8">
+                            <!-- Circular Score -->
+                            <div class="relative w-40 h-40">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="8"></circle>
+                                    <circle id="score-circle" cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" stroke-width="8" 
+                                            stroke-dasharray="282.7" stroke-dashoffset="282.7" class="score-circle" transform="rotate(-90 50 50)"></circle>
+                                    <text x="50" y="55" text-anchor="middle" id="score-text" class="text-3xl font-bold fill-slate-800" style="font-size: 1.5rem;">0%</text>
+                                </svg>
+                            </div>
+                            <div class="flex-1 text-center md:text-left">
+                                <h3 class="text-2xl font-bold text-slate-900 mb-2" id="result-status">Analyzing Results...</h3>
+                                <p class="text-slate-600 mb-4" id="result-desc">Your resume has been processed against our global hiring standards.</p>
+                                <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold" id="format-badge">Valid Format</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold" id="length-badge">Optimal Length</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-key text-blue-500"></i> Keyword Analysis
+                            </h4>
+                            <ul class="space-y-3" id="keyword-list">
+                                <!-- JS injected -->
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-lightbulb text-amber-500"></i> Critical Fixes
+                            </h4>
+                            <ul class="space-y-3" id="fixes-list">
+                                <!-- JS injected -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <button onclick="resetScanner()" class="w-full py-4 text-slate-500 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-redo-alt mr-2"></i> Scan Another Resume
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mock Dashboard Section -->
+        <section id="dashboard-section" class="hidden-section min-h-screen bg-slate-100 py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Recruiter Pipeline</h2>
+                    <div class="flex gap-2">
+                        <button class="bg-white p-2 rounded-lg border border-slate-200"><i class="fas fa-filter"></i></button>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">+ New Job Post</button>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-4 gap-4">
+                    <!-- Dashboard Columns -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between px-2">
+                            <span class="text-xs font-bold text-slate-500 uppercase">New Applicants (12)</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-xs font-bold text-blue-600">89 Score</span>
+                                <span class="text-[10px] text-slate-400">2h ago</span>
+                            </div>
+                            <h5 class="font-bold text-slate-800">Sarah Jenkins</h5>
+                            <p class="text-xs text-slate-500">Senior Product Designer</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-xs font-bold text-blue-600">82 Score</span>
+                                <span class="text-[10px] text-slate-400">5h ago</span>
+                            </div>
+                            <h5 class="font-bold text-slate-800">Michael Chen</h5>
+                            <p class="text-xs text-slate-500">Frontend Engineer</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Simplified other columns -->
+                    <div class="space-y-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase px-2">Interviewing (5)</span>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 opacity-60">
+                            <h5 class="font-bold text-slate-800">Robert Fox</h5>
+                            <p class="text-xs text-slate-500">UX Researcher</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase px-2">Offer Stage (2)</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase px-2">Hired (48)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-400 text-sm">© 2026 HireVantage AI Solutions. Optimized for Modern Recruitment.</p>
+        </div>
+    </footer>
+
+    <script>
+        // PDF.js configuration
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Navigation Logic
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden-section'));
+            document.getElementById(`${id}-section`).classList.remove('hidden-section');
+            window.scrollTo(0,0);
+        }
+
+        // Scanner Logic
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+
+        dropArea.onclick = () => fileInput.click();
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('active');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('active');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('active');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') handleFileUpload(file);
+        });
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) handleFileUpload(file);
+        };
+
+        async function handleFileUpload(file) {
+            document.getElementById('upload-step').classList.add('hidden-section');
+            document.getElementById('loading-step').classList.remove('hidden-section');
+
+            try {
+                const text = await extractText(file);
+                // Simulate processing time
+                setTimeout(() => {
+                    displayResults(text);
+                }, 2000);
+            } catch (err) {
+                console.error(err);
+                alert("Error reading PDF. Please try again.");
+                resetScanner();
+            }
+        }
+
+        async function extractText(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                fullText += content.items.map(item => item.str).join(' ');
+            }
+            return fullText.toLowerCase();
+        }
+
+        function displayResults(text) {
+            document.getElementById('loading-step').classList.add('hidden-section');
+            document.getElementById('results-step').classList.remove('hidden-section');
+
+            // Heuristic Scoring
+            const keywords = ['javascript', 'python', 'project', 'management', 'experience', 'education', 'skills', 'react', 'leadership', 'data', 'software', 'agile'];
+            let found = 0;
+            const foundList = [];
+            
+            keywords.forEach(word => {
+                if (text.includes(word)) {
+                    found++;
+                    foundList.push(word);
+                }
+            });
+
+            const score = Math.min(Math.round((found / keywords.length) * 100) + 10, 100);
+            
+            // UI Updates
+            updateScoreCircle(score);
+            document.getElementById('score-text').textContent = score + '%';
+            
+            const status = document.getElementById('result-status');
+            if (score > 80) { status.textContent = "High Match Rate!"; status.className = "text-2xl font-bold text-green-600 mb-2"; }
+            else if (score > 50) { status.textContent = "Moderate Match"; status.className = "text-2xl font-bold text-amber-600 mb-2"; }
+            else { status.textContent = "Needs Improvement"; status.className = "text-2xl font-bold text-red-600 mb-2"; }
+
+            // Keywords list
+            const kList = document.getElementById('keyword-list');
+            kList.innerHTML = keywords.slice(0, 6).map(k => `
+                <li class="flex items-center justify-between text-sm">
+                    <span class="text-slate-600 capitalize">${k}</span>
+                    <i class="fas ${text.includes(k) ? 'fa-check text-green-500' : 'fa-times text-slate-300'}"></i>
+                </li>
+            `).join('');
+
+            // Fixes list
+            const fList = document.getElementById('fixes-list');
+            const fixes = [];
+            if (!text.includes('linkedin')) fixes.push("Add LinkedIn profile URL");
+            if (text.length < 500) fixes.push("Resume seems too short");
+            if (!text.includes('education')) fixes.push("Missing Education section");
+            if (found < 5) fixes.push("Increase industry keywords");
+            
+            if (fixes.length === 0) fixes.push("Format looks great! Consider adding more metrics.");
+
+            fList.innerHTML = fixes.map(f => `
+                <li class="text-sm text-slate-600 flex gap-2">
+                    <span class="text-amber-500">•</span> ${f}
+                </li>
+            `).join('');
+        }
+
+        function updateScoreCircle(score) {
+            const circle = document.getElementById('score-circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (score / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function resetScanner() {
+            document.getElementById('results-step').classList.add('hidden-section');
+            document.getElementById('upload-step').classList.remove('hidden-section');
+            fileInput.value = "";
+            updateScoreCircle(0);
+        }
+    </script>
+</body>
+</html>
